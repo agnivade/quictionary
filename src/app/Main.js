@@ -26,6 +26,10 @@ const styles = {
   },
 };
 
+// Different search states
+const DONE_STATE = "done";
+const IN_PROGRESS_STATE = "inprogress";
+
 const muiTheme = getMuiTheme();
 
 class Main extends React.Component {
@@ -33,15 +37,25 @@ class Main extends React.Component {
     super(props, context);
     this.dictionaryObj = new Dictionary();
     this.handleTouchTap = this.handleTouchTap.bind(this);
+
+    // Setting state
+    this.state = {searchState: DONE_STATE, searchResponse: ""};
   }
 
   handleTouchTap() {
+    // Setting searchState to true to show the loading circle
+    this.setState({searchState: IN_PROGRESS_STATE});
     let word = this.refs.searchText.input.value;
-    this.dictionaryObj.lookupWord(word, function(err, response) {
+
+    // Making the API call
+    this.dictionaryObj.lookupWord(word, (err, response) => {
       if (err) {
         return console.error(err);
       }
-      console.log(`Meaning- ${JSON.stringify(response)}`);
+      this.setState({
+        searchState: DONE_STATE,
+        searchResponse: JSON.stringify(response)
+      });
     });
     this.refs.searchText.input.value = "";
   }
@@ -61,18 +75,22 @@ class Main extends React.Component {
             secondary={true}
             onTouchTap={this.handleTouchTap}
           />
-          <Paper
-            children={<div>Store the response here</div>}
-            style={styles.paper}
-            zDepth={2}
-          />
-          <RefreshIndicator
-            size={40}
-            left={10}
-            top={0}
-            status="loading"
-            style={styles.refresh}
-          />
+          {this.state.searchState == IN_PROGRESS_STATE
+            ?
+            <RefreshIndicator
+              size={40}
+              left={window.innerWidth/2-20}
+              top={40}
+              status="loading"
+              style={styles.refresh}
+            />
+            :
+            <Paper
+              children={<div>{this.state.searchResponse}</div>}
+              style={styles.paper}
+              zDepth={2}
+            />
+          }
         </div>
       </MuiThemeProvider>
     );

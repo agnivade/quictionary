@@ -9,6 +9,7 @@ class Dictionary {
     this.apiKey = 'a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
   }
 
+  // Calls all the functions to give a total combined response
   lookupWord(word, callback) {
     async.parallel({
       meaning: (cb) => {
@@ -40,6 +41,7 @@ class Dictionary {
     });
   }
 
+  // Gets the meanings of a word along with parts of speed
   getMeaning(word, callback) {
     let meaningUrl = this.baseApi + encodeURIComponent(word) + '/definitions';
     let queryParams = {
@@ -61,6 +63,7 @@ class Dictionary {
     });
   }
 
+  // Gets example sentences of a word along with its source
   getExample(word, callback) {
     let exampleUrl = this.baseApi + encodeURIComponent(word) + '/examples';
     let queryParams = {
@@ -81,6 +84,7 @@ class Dictionary {
     });
   }
 
+  // Gets the phonetic representation of a word
   getPronunciation(word, callback) {
     let pronunciationUrl = this.baseApi + encodeURIComponent(word) + '/pronunciations';
     let queryParams = {
@@ -99,6 +103,7 @@ class Dictionary {
     });
   }
 
+  // Gets audio pronuunciation of a word
   getAudio(word, callback) {
     let audioUrl = this.baseApi + encodeURIComponent(word) + '/audio';
     let queryParams = {
@@ -117,6 +122,7 @@ class Dictionary {
     });
   }
 
+  // Helper function which checks for errors from API requests
   _checkForErrors(err, response, body) {
     if (err) {
       return err;
