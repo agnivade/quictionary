@@ -1,9 +1,5 @@
-/**
- * In this file, we create a React component
- * which incorporates components providedby material-ui.
- */
+'use strict';
 import React from 'react';
-
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
@@ -11,6 +7,8 @@ import RefreshIndicator from 'material-ui/RefreshIndicator';
 import {deepOrange500} from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+import Dictionary from '../api/Dictionary';
 
 const styles = {
   container: {
@@ -33,12 +31,25 @@ const muiTheme = getMuiTheme();
 class Main extends React.Component {
   constructor(props, context) {
     super(props, context);
-
+    this.dictionaryObj = new Dictionary();
     this.handleTouchTap = this.handleTouchTap.bind(this);
   }
 
   handleTouchTap() {
-    console.log("clicked !");
+    let word = this.refs.searchText.input.value;
+    this.dictionaryObj.getMeaning(word, function(err, response) {
+      if (err) {
+        return console.error(err);
+      }
+      console.log(`Meaning- ${JSON.stringify(response)}`);
+    });
+    this.dictionaryObj.getExample(word, function(err, response) {
+      if (err) {
+        return console.error(err);
+      }
+      console.log(`Example- ${JSON.stringify(response)}`);
+    });
+    this.refs.searchText.input.value = "";
   }
 
   render() {
@@ -58,7 +69,7 @@ class Main extends React.Component {
           />
           <Paper
             children={<div>Store the response here</div>}
-            style={paperStyle}
+            style={styles.paper}
             zDepth={2}
           />
           <RefreshIndicator
