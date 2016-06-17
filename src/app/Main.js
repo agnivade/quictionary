@@ -37,17 +37,11 @@ class Main extends React.Component {
 
   handleTouchTap() {
     let word = this.refs.searchText.input.value;
-    this.dictionaryObj.getMeaning(word, function(err, response) {
+    this.dictionaryObj.lookupWord(word, function(err, response) {
       if (err) {
         return console.error(err);
       }
       console.log(`Meaning- ${JSON.stringify(response)}`);
-    });
-    this.dictionaryObj.getExample(word, function(err, response) {
-      if (err) {
-        return console.error(err);
-      }
-      console.log(`Example- ${JSON.stringify(response)}`);
     });
     this.refs.searchText.input.value = "";
   }
