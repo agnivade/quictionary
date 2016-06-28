@@ -47,6 +47,14 @@ class Main extends React.Component {
     this.state = {searchState: EMPTY_STATE, searchResponse: "", inputWord: ""};
   }
 
+  componentDidMount() {
+    // Focussing on the text box on page load
+    setTimeout(() => {
+      // Giving a 100 ms delay for a more visual transition effect
+      this.refs.searchText.input.focus();
+    }, 100);
+  }
+
   handleTouchTap() {
     // Setting searchState to true to show the loading circle
     this.setState({searchState: IN_PROGRESS_STATE});
