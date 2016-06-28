@@ -20,13 +20,16 @@ const styles = {
     margin: '0 auto',
     marginTop: 50,
     padding: 5,
-    fontSize: 15
   },
   refresh: {
     position: 'relative',
   },
   entryStyle: {
     textAlign: 'left'
+  },
+  icon: {
+    verticalAlign: 'text-bottom',
+    cursor: 'pointer'
   }
 };
 
@@ -42,6 +45,7 @@ class Main extends React.Component {
     super(props, context);
     this.dictionaryObj = new Dictionary();
     this.handleTouchTap = this.handleTouchTap.bind(this);
+    this.playAudio = this.playAudio.bind(this);
 
     // Setting state
     this.state = {searchState: EMPTY_STATE, searchResponse: "", inputWord: ""};
@@ -72,6 +76,11 @@ class Main extends React.Component {
       });
     });
     this.refs.searchText.input.value = "";
+  }
+
+  // Play the audio element on click
+  playAudio() {
+    this.refs.audioElem.play();
   }
 
   render() {
@@ -120,6 +129,18 @@ class Main extends React.Component {
             <div>
             <strong>{this.state.inputWord}</strong>
             {this.state.searchResponse.pronunciation}
+            <i
+              ref="audioIcon"
+              className="material-icons"
+              onClick={this.playAudio}
+              style={styles.icon}>
+              volume_up
+            </i>
+            <audio
+              ref="audioElem"
+              src={this.state.searchResponse.audio}
+              preload="auto">
+            </audio>
             <br />
             Meanings-
             {meaningSection}
