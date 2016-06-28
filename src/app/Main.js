@@ -16,17 +16,22 @@ const styles = {
     paddingTop: 50,
   },
   paper: {
-    height: 100,
     width: 600,
     margin: '0 auto',
-    marginTop: '50px',
+    marginTop: 50,
+    padding: 5,
+    fontSize: 15
   },
   refresh: {
     position: 'relative',
   },
+  entryStyle: {
+    textAlign: 'left'
+  }
 };
 
 // Different search states
+const EMPTY_STATE = "empty";
 const DONE_STATE = "done";
 const IN_PROGRESS_STATE = "inprogress";
 
@@ -39,7 +44,7 @@ class Main extends React.Component {
     this.handleTouchTap = this.handleTouchTap.bind(this);
 
     // Setting state
-    this.state = {searchState: DONE_STATE, searchResponse: ""};
+    this.state = {searchState: EMPTY_STATE, searchResponse: "", inputWord: ""};
   }
 
   handleTouchTap() {
@@ -54,17 +59,73 @@ class Main extends React.Component {
       }
       this.setState({
         searchState: DONE_STATE,
-        searchResponse: JSON.stringify(response)
+        searchResponse: response,
+        inputWord: word
       });
     });
     this.refs.searchText.input.value = "";
   }
 
   render() {
+    // Creating the meaning and example section if the state is properly set
+    let meaningSection = "";
+    let exampleSection = "";
+    if (this.state.searchState == DONE_STATE && this.state.searchResponse.meaning) {
+      meaningSection = this.state.searchResponse.meaning.map((word, i) => {
+                return (
+                  <div key={i} style={styles.entryStyle}>
+                  <i>{word.partOfSpeech}</i> {word.meaning}
+                  </div>
+                );
+              });
+    }
+    if (this.state.searchState == DONE_STATE && this.state.searchResponse.example) {
+      exampleSection = this.state.searchResponse.example.map((example, i) => {
+                return (
+                  <div key={i} style={styles.entryStyle}>
+                  "{example.example}" ({example.source})
+                  </div>
+                );
+              });
+    }
+
+    // Creating the response section depending on the state
+    let responseSection = null;
+    switch (this.state.searchState) {
+      case EMPTY_STATE:
+        responseSection = "";
+        break;
+      case IN_PROGRESS_STATE:
+        responseSection = <RefreshIndicator
+              size={40}
+              left={window.innerWidth/2-20}
+              top={40}
+              status="loading"
+              style={styles.refresh}
+            />;
+        break;
+      case DONE_STATE:
+        responseSection = <Paper
+              style={styles.paper}
+              zDepth={2}
+            >
+            <div>
+            <strong>{this.state.inputWord}</strong>
+            {this.state.searchResponse.pronunciation}
+            <br />
+            Meanings-
+            {meaningSection}
+            <br />
+            Examples-
+            {exampleSection}
+            </div>
+            </Paper>
+        break;
+    }
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div style={styles.container}>
-          <h1>Quick Word Lookup</h1>
+          <h1>Quictionary</h1>
           <TextField
             ref="searchText"
             floatingLabelText="Enter the word you are looking for"
@@ -75,22 +136,7 @@ class Main extends React.Component {
             secondary={true}
             onTouchTap={this.handleTouchTap}
           />
-          {this.state.searchState == IN_PROGRESS_STATE
-            ?
-            <RefreshIndicator
-              size={40}
-              left={window.innerWidth/2-20}
-              top={40}
-              status="loading"
-              style={styles.refresh}
-            />
-            :
-            <Paper
-              children={<div>{this.state.searchResponse}</div>}
-              style={styles.paper}
-              zDepth={2}
-            />
-          }
+          {responseSection}
         </div>
       </MuiThemeProvider>
     );
