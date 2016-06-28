@@ -162,7 +162,7 @@ class Main extends React.Component {
           />
           <RaisedButton
             label="Bring the Answer!"
-            secondary={true}
+            primary={true}
             onTouchTap={this.handleTouchTap}
           />
           {responseSection}
