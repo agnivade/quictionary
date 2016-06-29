@@ -5,6 +5,7 @@ import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
 import RefreshIndicator from 'material-ui/RefreshIndicator';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import {red500,red700,limeA200,grey100,grey900,grey400,white} from 'material-ui/styles/colors';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import Dictionary from '../api/Dictionary';
@@ -13,6 +14,7 @@ const styles = {
   container: {
     textAlign: 'center',
     paddingTop: 50,
+    color: grey100
   },
   paper: {
     width: 600,
@@ -37,7 +39,15 @@ const EMPTY_STATE = "empty";
 const DONE_STATE = "done";
 const IN_PROGRESS_STATE = "inprogress";
 
-const muiTheme = getMuiTheme();
+const muiTheme = getMuiTheme({
+  palette: {
+    primary1Color: red500,
+    primary2Color: red700,
+    accent1Color: limeA200,
+    textColor: grey100,
+    alternateTextColor: white,
+    canvasColor: grey900
+  }});
 
 class Main extends React.Component {
   constructor(props, context) {
@@ -178,6 +188,8 @@ class Main extends React.Component {
           <TextField
             ref="searchText"
             floatingLabelText="Enter the word you are looking for"
+            floatingLabelStyle={{color: grey400}}
+            floatingLabelFocusStyle={{color: red500}}
             fullWidth={true}
             onChange={this.onTextChange}
             onKeyDown={this.onKeyDown}
@@ -186,6 +198,7 @@ class Main extends React.Component {
             ref="searchBtn"
             label="Bring the Answer!"
             disabled={!this.state.currentText}
+            disabledLabelColor={grey400}
             primary={true}
             onTouchTap={this.getResponse}
           />
