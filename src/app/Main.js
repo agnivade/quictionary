@@ -42,26 +42,34 @@ const muiTheme = getMuiTheme();
 class Main extends React.Component {
   constructor(props, context) {
     super(props, context);
+    // Initializing dictionary
     this.dictionaryObj = new Dictionary();
-    this.handleTouchTap = this.handleTouchTap.bind(this);
+    // Binding this to the event handlers
+    this.getResponse = this.getResponse.bind(this);
+    this.onTextChange = this.onTextChange.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
     this.playAudio = this.playAudio.bind(this);
 
     // Setting state
-    this.state = {searchState: EMPTY_STATE, searchResponse: "", inputWord: ""};
+    this.state = {
+      searchState: EMPTY_STATE,
+      searchResponse: "",
+      searchText: "", // searchText is the text that is shown in the results
+      currentText: ""}; // currentText tracks the current text that is entered
   }
 
   componentDidMount() {
     // Focussing on the text box on page load
     setTimeout(() => {
       // Giving a 100 ms delay for a more visual transition effect
-      this.refs.searchText.input.focus();
+      this.refs.searchText.focus();
     }, 100);
   }
 
-  handleTouchTap() {
+  getResponse() {
     // Setting searchState to true to show the loading circle
     this.setState({searchState: IN_PROGRESS_STATE});
-    let word = this.refs.searchText.input.value;
+    let word = this.refs.searchText.getValue();
 
     // Making the API call
     this.dictionaryObj.lookupWord(word, (err, response) => {
@@ -71,10 +79,22 @@ class Main extends React.Component {
       this.setState({
         searchState: DONE_STATE,
         searchResponse: response,
-        inputWord: word
+        searchText: word,
+        currentText: "",
       });
     });
-    this.refs.searchText.input.value = "";
+    this.refs.searchText.getInputNode().value = "";
+  }
+
+  onTextChange(e) {
+    this.setState({currentText: e.target.value});
+  }
+
+  // Get the response if enter is pressed
+  onKeyDown(e) {
+    if (e.keyCode == 13) {
+      this.getResponse();
+    }
   }
 
   // Play the audio element on click
@@ -126,7 +146,7 @@ class Main extends React.Component {
               zDepth={2}
             >
             <div>
-            <strong>{this.state.inputWord}</strong>
+            <strong>{this.state.searchText}</strong>
             {this.state.searchResponse.pronunciation}
             <i
               ref="audioIcon"
@@ -159,11 +179,15 @@ class Main extends React.Component {
             ref="searchText"
             floatingLabelText="Enter the word you are looking for"
             fullWidth={true}
+            onChange={this.onTextChange}
+            onKeyDown={this.onKeyDown}
           />
           <RaisedButton
+            ref="searchBtn"
             label="Bring the Answer!"
+            disabled={!this.state.currentText}
             primary={true}
-            onTouchTap={this.handleTouchTap}
+            onTouchTap={this.getResponse}
           />
           {responseSection}
         </div>
