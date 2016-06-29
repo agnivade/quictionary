@@ -36,7 +36,8 @@ const styles = {
 
 // Different search states
 const EMPTY_STATE = "empty";
-const DONE_STATE = "done";
+const DONE_SUCCESS_STATE = "done";
+const DONE_ERROR_STATE = "error";
 const IN_PROGRESS_STATE = "inprogress";
 
 const muiTheme = getMuiTheme({
@@ -84,10 +85,16 @@ class Main extends React.Component {
     // Making the API call
     this.dictionaryObj.lookupWord(word, (err, response) => {
       if (err) {
-        return console.error(err);
+        console.error(err);
+        this.setState({
+          searchState: DONE_ERROR_STATE,
+          searchResponse: err,
+          currentText: "",
+        });
+        return;
       }
       this.setState({
-        searchState: DONE_STATE,
+        searchState: DONE_SUCCESS_STATE,
         searchResponse: response,
         searchText: word,
         currentText: "",
@@ -116,7 +123,7 @@ class Main extends React.Component {
     // Creating the meaning and example section if the state is properly set
     let meaningSection = "";
     let exampleSection = "";
-    if (this.state.searchState == DONE_STATE && this.state.searchResponse.meaning) {
+    if (this.state.searchState == DONE_SUCCESS_STATE && this.state.searchResponse.meaning) {
       meaningSection = this.state.searchResponse.meaning.map((word, i) => {
                 return (
                   <div key={i} style={styles.entryStyle}>
@@ -125,7 +132,7 @@ class Main extends React.Component {
                 );
               });
     }
-    if (this.state.searchState == DONE_STATE && this.state.searchResponse.example) {
+    if (this.state.searchState == DONE_SUCCESS_STATE && this.state.searchResponse.example) {
       exampleSection = this.state.searchResponse.example.map((example, i) => {
                 return (
                   <div key={i} style={styles.entryStyle}>
@@ -150,7 +157,7 @@ class Main extends React.Component {
               style={styles.refresh}
             />;
         break;
-      case DONE_STATE:
+      case DONE_SUCCESS_STATE:
         responseSection = <Paper
               style={styles.paper}
               zDepth={2}
@@ -176,6 +183,18 @@ class Main extends React.Component {
             <br />
             Examples-
             {exampleSection}
+            </div>
+            </Paper>
+        break;
+      case DONE_ERROR_STATE:
+        responseSection = <Paper
+              style={styles.paper}
+              zDepth={2}
+            >
+            <div>
+            <strong style={{color: red700}}>
+            {this.state.searchResponse}
+            </strong>
             </div>
             </Paper>
         break;

@@ -3,6 +3,7 @@ const request = require('browser-request');
 const _ = require('underscore');
 const async = require('async');
 
+const EMPTY_RESPONSE = "Empty response";
 class Dictionary {
   constructor() {
     this.baseApi = 'http://api.wordnik.com:80/v4/word.json/';
@@ -35,7 +36,7 @@ class Dictionary {
     },
     function (err, results) {
       if (err) {
-        callback(err, null);
+        return callback(err, null);
       }
       callback(null, results);
     });
@@ -73,6 +74,10 @@ class Dictionary {
     request({uri: exampleUrl, qs: queryParams, json: true},
       (err, response, body) => {
       let errCheck = this._checkForErrors(err, response, body);
+      // In case of examples, empty response is okay
+      if (errCheck == EMPTY_RESPONSE) {
+        return callback(null, []);
+      }
       if (! _.isNull(errCheck)) {
         return callback(errCheck, null);
       }
@@ -129,7 +134,7 @@ class Dictionary {
     } else if (response.statusCode != 200) {
       return body;
     } else if (_.isEmpty(body)) {
-      return "Empty response";
+      return EMPTY_RESPONSE;
     } else {
       return null;
     }
