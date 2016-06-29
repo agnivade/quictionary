@@ -79,7 +79,7 @@ class Main extends React.Component {
   getResponse() {
     // Setting searchState to true to show the loading circle
     this.setState({searchState: IN_PROGRESS_STATE});
-    let word = this.refs.searchText.getValue();
+    let word = this.refs.searchText.getValue().toLowerCase();
 
     // Making the API call
     this.dictionaryObj.lookupWord(word, (err, response) => {
