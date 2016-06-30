@@ -5,6 +5,8 @@ Demo
 ----
 [http://agnivade.github.io/quictionary](http://agnivade.github.io/quictionary)
 
+![Screenshot](screenshot.png?raw=true)
+
 Setup
 -----
 
