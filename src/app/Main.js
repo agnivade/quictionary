@@ -2,43 +2,28 @@
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import Paper from 'material-ui/Paper';
-import RefreshIndicator from 'material-ui/RefreshIndicator';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import {deepOrange500,deepOrange700,limeA200,grey100,grey900,grey400,white} from 'material-ui/styles/colors';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import Dictionary from '../api/Dictionary';
+import ResponseSection from './ResponseSection';
 
 const styles = {
   container: {
     textAlign: 'center',
     paddingTop: 50,
     color: grey100
-  },
-  paper: {
-    width: 600,
-    margin: '0 auto',
-    marginTop: 50,
-    padding: 5,
-  },
-  refresh: {
-    position: 'relative',
-  },
-  entryStyle: {
-    textAlign: 'left'
-  },
-  icon: {
-    verticalAlign: 'text-bottom',
-    cursor: 'pointer'
   }
 };
 
 // Different search states
-const EMPTY_STATE = "empty";
-const DONE_SUCCESS_STATE = "done";
-const DONE_ERROR_STATE = "error";
-const IN_PROGRESS_STATE = "inprogress";
+const searchState = {
+  EMPTY_STATE: "empty",
+  DONE_SUCCESS_STATE: "done",
+  DONE_ERROR_STATE: "error",
+  IN_PROGRESS_STATE: "inprogress"
+};
 
 const muiTheme = getMuiTheme({
   palette: {
@@ -59,11 +44,10 @@ class Main extends React.Component {
     this.getResponse = this.getResponse.bind(this);
     this.onTextChange = this.onTextChange.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
-    this.playAudio = this.playAudio.bind(this);
 
     // Setting state
     this.state = {
-      searchState: EMPTY_STATE,
+      searchState: searchState.EMPTY_STATE,
       searchResponse: "",
       searchText: "", // searchText is the text that is shown in the results
       currentText: ""}; // currentText tracks the current text that is entered
@@ -79,7 +63,7 @@ class Main extends React.Component {
 
   getResponse() {
     // Setting searchState to true to show the loading circle
-    this.setState({searchState: IN_PROGRESS_STATE});
+    this.setState({searchState: searchState.IN_PROGRESS_STATE});
     let word = this.refs.searchText.getValue().toLowerCase();
 
     // Making the API call
@@ -87,14 +71,14 @@ class Main extends React.Component {
       if (err) {
         console.error(err);
         this.setState({
-          searchState: DONE_ERROR_STATE,
+          searchState: searchState.DONE_ERROR_STATE,
           searchResponse: err,
           currentText: "",
         });
         return;
       }
       this.setState({
-        searchState: DONE_SUCCESS_STATE,
+        searchState: searchState.DONE_SUCCESS_STATE,
         searchResponse: response,
         searchText: word,
         currentText: "",
@@ -114,91 +98,7 @@ class Main extends React.Component {
     }
   }
 
-  // Play the audio element on click
-  playAudio() {
-    this.refs.audioElem.play();
-  }
-
   render() {
-    // Creating the meaning and example section if the state is properly set
-    let meaningSection = "";
-    let exampleSection = "";
-    if (this.state.searchState == DONE_SUCCESS_STATE && this.state.searchResponse.meaning) {
-      meaningSection = this.state.searchResponse.meaning.map((word, i) => {
-                return (
-                  <div key={i} style={styles.entryStyle}>
-                  <i>{word.partOfSpeech}</i> {word.meaning}
-                  </div>
-                );
-              });
-    }
-    if (this.state.searchState == DONE_SUCCESS_STATE && this.state.searchResponse.example) {
-      exampleSection = this.state.searchResponse.example.map((example, i) => {
-                return (
-                  <div key={i} style={styles.entryStyle}>
-                  "{example.example}" ({example.source})
-                  </div>
-                );
-              });
-    }
-
-    // Creating the response section depending on the state
-    let responseSection = null;
-    switch (this.state.searchState) {
-      case EMPTY_STATE:
-        responseSection = "";
-        break;
-      case IN_PROGRESS_STATE:
-        responseSection = <RefreshIndicator
-              size={40}
-              left={window.innerWidth/2-20}
-              top={40}
-              status="loading"
-              style={styles.refresh}
-            />;
-        break;
-      case DONE_SUCCESS_STATE:
-        responseSection = <Paper
-              style={styles.paper}
-              zDepth={2}
-            >
-            <div>
-            <strong>{this.state.searchText}</strong>
-            {this.state.searchResponse.pronunciation}
-            <i
-              ref="audioIcon"
-              className="material-icons"
-              onClick={this.playAudio}
-              style={styles.icon}>
-              volume_up
-            </i>
-            <audio
-              ref="audioElem"
-              src={this.state.searchResponse.audio}
-              preload="auto">
-            </audio>
-            <br />
-            Meanings-
-            {meaningSection}
-            <br />
-            Examples-
-            {exampleSection}
-            </div>
-            </Paper>
-        break;
-      case DONE_ERROR_STATE:
-        responseSection = <Paper
-              style={styles.paper}
-              zDepth={2}
-            >
-            <div>
-            <strong style={{color: deepOrange700}}>
-            {this.state.searchResponse}
-            </strong>
-            </div>
-            </Paper>
-        break;
-    }
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <div style={styles.container}>
@@ -221,7 +121,11 @@ class Main extends React.Component {
             primary={true}
             onTouchTap={this.getResponse}
           />
-          {responseSection}
+          <ResponseSection
+            searchState={this.state.searchState}
+            searchResponse={this.state.searchResponse}
+            allStates={searchState}
+          />
         </div>
       </MuiThemeProvider>
     );
