@@ -6,7 +6,7 @@ import {deepOrange700} from 'material-ui/styles/colors';
 
 const styles = {
   paper: {
-    width: 600,
+    maxWidth: 600,
     margin: '0 auto',
     marginTop: 50,
     padding: 5,
