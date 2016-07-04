@@ -25,6 +25,7 @@ const searchState = {
   IN_PROGRESS_STATE: "inprogress"
 };
 
+// Setting up the color palette
 const muiTheme = getMuiTheme({
   palette: {
     primary1Color: deepOrange500,
@@ -33,7 +34,8 @@ const muiTheme = getMuiTheme({
     textColor: grey100,
     alternateTextColor: white,
     canvasColor: grey900
-  }});
+  }
+});
 
 class Main extends React.Component {
   constructor(props, context) {
@@ -64,7 +66,11 @@ class Main extends React.Component {
   getResponse() {
     // Setting searchState to true to show the loading circle
     this.setState({searchState: searchState.IN_PROGRESS_STATE});
-    let word = this.refs.searchText.getValue().toLowerCase();
+    let word = this.refs.searchText.getValue();
+    // Unless the entire word is an acronym, convert to lowercase
+    if (word != word.toUpperCase()) {
+      word = word.toLowerCase();
+    }
 
     // Making the API call
     this.dictionaryObj.lookupWord(word, (err, response) => {

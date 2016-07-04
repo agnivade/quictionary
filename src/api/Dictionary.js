@@ -1,7 +1,7 @@
 'use strict';
-const request = require('browser-request');
-const _ = require('underscore');
-const async = require('async');
+import request from 'browser-request';
+import _ from 'underscore';
+import async from 'async';
 
 const EMPTY_RESPONSE = "Empty response";
 class Dictionary {
