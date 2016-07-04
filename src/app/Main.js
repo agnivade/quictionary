@@ -1,4 +1,5 @@
 'use strict';
+import Firebase from 'firebase';
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
@@ -37,11 +38,27 @@ const muiTheme = getMuiTheme({
   }
 });
 
+// Initializing firebase
+// TODO: get this setting from a config file
+Firebase.initializeApp({
+  apiKey: "AIzaSyDes5f-3Rskw0dbPBbw1IhY68GoP-8dLpY",
+  authDomain: "quictionary-c7eff.firebaseapp.com",
+  databaseURL: "https://quictionary-c7eff.firebaseio.com",
+  storageBucket: "quictionary-c7eff.appspot.com"
+});
+Firebase.auth().signInAnonymously().catch(function(error) {
+  if (error) {
+    console.error(error);
+  }
+});
+
 class Main extends React.Component {
   constructor(props, context) {
     super(props, context);
     // Initializing dictionary
     this.dictionaryObj = new Dictionary();
+    // Getting reference to the firebase DB
+    this.firebaseDB = Firebase.database();
     // Binding this to the event handlers
     this.getResponse = this.getResponse.bind(this);
     this.onTextChange = this.onTextChange.bind(this);
@@ -83,6 +100,10 @@ class Main extends React.Component {
         });
         return;
       }
+      // Incrementing the counter for the word
+      this.firebaseDB.ref('words/' + word).transaction(function(counter) {
+        return counter+1;
+      });
       this.setState({
         searchState: searchState.DONE_SUCCESS_STATE,
         searchResponse: response,
