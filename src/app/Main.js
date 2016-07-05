@@ -9,6 +9,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import Dictionary from '../api/Dictionary';
 import ResponseSection from './ResponseSection';
+import firebaseConfig from '../firebaseConfig';
 
 const styles = {
   container: {
@@ -39,13 +40,7 @@ const muiTheme = getMuiTheme({
 });
 
 // Initializing firebase
-// TODO: get this setting from a config file
-Firebase.initializeApp({
-  apiKey: "AIzaSyDes5f-3Rskw0dbPBbw1IhY68GoP-8dLpY",
-  authDomain: "quictionary-c7eff.firebaseapp.com",
-  databaseURL: "https://quictionary-c7eff.firebaseio.com",
-  storageBucket: "quictionary-c7eff.appspot.com"
-});
+Firebase.initializeApp(firebaseConfig);
 Firebase.auth().signInAnonymously().catch(function(error) {
   if (error) {
     console.error(error);
