@@ -1,7 +1,7 @@
 // Change it to your own database
 export default {
-  apiKey: "AIzaSyDes5f-3Rskw0dbPBbw1IhY68GoP-8dLpY",
-  authDomain: "quictionary-c7eff.firebaseapp.com",
-  databaseURL: "https://quictionary-c7eff.firebaseio.com",
-  storageBucket: "quictionary-c7eff.appspot.com"
+  apiKey: "AIzaSyBP4jQh_7jL2uSVAlZOQjWDjXPBJ4jEWP4",
+  authDomain: "dev-db-c0079.firebaseapp.com",
+  databaseURL: "https://dev-db-c0079.firebaseio.com",
+  storageBucket: "",
 };
