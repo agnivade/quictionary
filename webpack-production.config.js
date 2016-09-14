@@ -26,6 +26,8 @@ const config = {
         warnings: false,
       },
     }),
+    // Deduplicate equal or similar files in output
+    new webpack.optimize.DedupePlugin(),
     // Allows error warnings but does not stop compiling.
     new webpack.NoErrorsPlugin(),
     // Transfer Files
